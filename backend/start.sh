@@ -96,7 +96,7 @@ fi
 
 # ── Launch uvicorn ───────────────────────────────────────────────────────────
 
-PYTHON_CMD=$(command -v python3 || command -v python)
+PYTHON_CMD=$(command -v python3.11 || command -v python3 || command -v python)
 UVICORN_WORKERS="${UVICORN_WORKERS:-1}"
 
 if [[ "$#" -gt 0 ]]; then

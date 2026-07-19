@@ -680,6 +680,34 @@ ENABLE_SIGNUP_PASSWORD_CONFIRMATION = os.getenv('ENABLE_SIGNUP_PASSWORD_CONFIRMA
 # Secret key & cookies
 ####################################
 
+# ---------------------------------------------------------------------------
+# SHAHEEN-prefixed environment variable aliases
+# SHAHEEN_* vars are supported as aliases for WEBUI_* vars for convenience.
+# Existing WEBUI_* variables always take precedence when both are set.
+# ---------------------------------------------------------------------------
+
+def _shaheen_alias(webui_key: str, shaheen_key: str, default: str = '') -> str:
+    """Return os.getenv(webui_key) if set, else os.getenv(shaheen_key), else default."""
+    return os.getenv(webui_key) or os.getenv(shaheen_key) or default
+
+
+# Apply SHAHEEN_* aliases before any WEBUI_* variables are consumed
+for _webui_key, _shaheen_key in [
+    ('WEBUI_NAME', 'SHAHEEN_NAME'),
+    ('WEBUI_URL', 'SHAHEEN_URL'),
+    ('WEBUI_SESSION_COOKIE_SECURE', 'SHAHEEN_SESSION_COOKIE_SECURE'),
+    ('WEBUI_AUTH_COOKIE_SECURE', 'SHAHEEN_AUTH_COOKIE_SECURE'),
+    ('WEBUI_SESSION_COOKIE_SAME_SITE', 'SHAHEEN_SESSION_COOKIE_SAME_SITE'),
+]:
+    _shaheen_val = os.getenv(_shaheen_key)
+    if _shaheen_val and not os.getenv(_webui_key):
+        os.environ[_webui_key] = _shaheen_val
+
+# SHAHEEN_SECRET_KEY is the alias for WEBUI_SECRET_KEY
+_shaheen_secret = os.getenv('SHAHEEN_SECRET_KEY')
+if _shaheen_secret and not os.getenv('WEBUI_SECRET_KEY') and not os.getenv('WEBUI_JWT_SECRET_KEY'):
+    os.environ['WEBUI_SECRET_KEY'] = _shaheen_secret
+
 # WEBUI_JWT_SECRET_KEY is deprecated; use WEBUI_SECRET_KEY instead.
 # No hardcoded fallback by design: the supported start scripts set/auto-generate it; unset is rejected below.
 WEBUI_SECRET_KEY = os.getenv(

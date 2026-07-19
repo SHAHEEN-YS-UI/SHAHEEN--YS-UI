@@ -1,7 +1,8 @@
-modules = ["python-3.11", "nodejs-18", "web"]
+modules = ["python-3.11", "web", "nodejs-20"]
 
 [nix]
 channel = "stable-25_05"
+packages = ["arrow-cpp", "cargo", "dos2unix", "ffmpeg-full", "freetype", "glibcLocales", "grpc", "hydrus", "lcms2", "libiconv", "libimagequant", "libjpeg", "libsndfile", "libtiff", "libwebp", "libxcrypt", "oneDNN", "openjpeg", "openssl", "pandoc", "pkg-config", "postgresql", "re2", "rustc", "sqlite", "tcl", "tk", "zlib"]
 
 [agent]
 expertMode = true

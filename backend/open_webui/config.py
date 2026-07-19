@@ -312,7 +312,7 @@ ENABLE_OPENAI_API = os.getenv('ENABLE_OPENAI_API', 'True').lower() == 'true'
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
 OPENAI_API_BASE_URL = os.getenv('OPENAI_API_BASE_URL', '')
 
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '') or os.getenv('GOOGLE_API_KEY', '')
 GEMINI_API_BASE_URL = os.getenv('GEMINI_API_BASE_URL', '')
 
 
@@ -335,6 +335,68 @@ OPENAI_API_BASE_URLS = [
     url.strip() if url != '' else 'https://api.openai.com/v1' for url in OPENAI_API_BASE_URLS.split(';')
 ]
 OPENAI_API_BASE_URLS = OPENAI_API_BASE_URLS
+
+# ---------------------------------------------------------------------------
+# SHAHEEN-YS-UI: Multiple Indexed API Keys
+# Discover PROVIDER_API_KEY1, PROVIDER_API_KEY2, ... PROVIDER_API_KEYn and
+# merge them into the semicolon-separated OPENAI_API_KEYS / OPENAI_API_BASE_URLS
+# for provider-level load balancing / failover.
+# Also auto-register cloud providers when only their native env var is set.
+# ---------------------------------------------------------------------------
+
+def _collect_indexed_keys(base_var: str) -> list[str]:
+    """Collect PROVIDER_API_KEY, PROVIDER_API_KEY1, PROVIDER_API_KEY2, … from env."""
+    keys = []
+    # Primary key
+    primary = os.getenv(base_var, '').strip()
+    if primary:
+        keys.append(primary)
+    # Indexed variants: KEY1, KEY2, … KEY99
+    for i in range(1, 100):
+        val = os.getenv(f'{base_var}{i}', '').strip()
+        if not val:
+            break
+        keys.append(val)
+    return keys
+
+
+# Provider endpoint map: (env_key_prefix, openai_compatible_base_url, label)
+# When a provider's API key is set, auto-register it as an OpenAI-compatible connection.
+_PROVIDER_ENDPOINTS: list[tuple[str, str]] = [
+    ('GROQ_API_KEY',       'https://api.groq.com/openai/v1'),
+    ('OPENROUTER_API_KEY', 'https://openrouter.ai/api/v1'),
+    ('MISTRAL_API_KEY',    'https://api.mistral.ai/v1'),
+    ('XAI_API_KEY',        'https://api.x.ai/v1'),
+    ('DEEPSEEK_API_KEY',   'https://api.deepseek.com/v1'),
+]
+
+for _key_prefix, _base_url in _PROVIDER_ENDPOINTS:
+    for _api_key in _collect_indexed_keys(_key_prefix):
+        if _api_key and _base_url not in OPENAI_API_BASE_URLS:
+            OPENAI_API_KEYS.append(_api_key)
+            OPENAI_API_BASE_URLS.append(_base_url)
+        elif _api_key and _base_url in OPENAI_API_BASE_URLS:
+            # Additional keys for same provider — append extra connections
+            _existing_idx = OPENAI_API_BASE_URLS.index(_base_url)
+            if OPENAI_API_KEYS[_existing_idx] != _api_key:
+                OPENAI_API_KEYS.append(_api_key)
+                OPENAI_API_BASE_URLS.append(_base_url)
+
+# Collect additional indexed OpenAI keys (OPENAI_API_KEY1, OPENAI_API_KEY2, …)
+for _extra_key in _collect_indexed_keys('OPENAI_API_KEY')[1:]:  # skip primary (index 0)
+    if _extra_key and _extra_key not in OPENAI_API_KEYS:
+        OPENAI_API_KEYS.append(_extra_key)
+        OPENAI_API_BASE_URLS.append('https://api.openai.com/v1')
+
+# Same for OpenRouter indexed keys
+for _extra_key in _collect_indexed_keys('OPENROUTER_API_KEY')[1:]:
+    if _extra_key and _extra_key not in OPENAI_API_KEYS:
+        OPENAI_API_KEYS.append(_extra_key)
+        OPENAI_API_BASE_URLS.append('https://openrouter.ai/api/v1')
+
+# Remove empty strings from the collected lists
+OPENAI_API_KEYS = [k for k in OPENAI_API_KEYS if k]
+OPENAI_API_BASE_URLS = [u for u in OPENAI_API_BASE_URLS if u]
 
 OPENAI_API_CONFIGS = {}
 _openai_api_configs = os.getenv('OPENAI_API_CONFIGS', '')
@@ -1185,9 +1247,15 @@ YACY_USERNAME = os.getenv('YACY_USERNAME', '')
 
 YACY_PASSWORD = os.getenv('YACY_PASSWORD', '')
 
-GOOGLE_PSE_API_KEY = os.getenv('GOOGLE_PSE_API_KEY', '')
+GOOGLE_PSE_API_KEY = (
+    os.getenv('GOOGLE_PSE_API_KEY')
+    or os.getenv('GOOGLE_SEARCH_API_KEY', '')
+)
 
-GOOGLE_PSE_ENGINE_ID = os.getenv('GOOGLE_PSE_ENGINE_ID', '')
+GOOGLE_PSE_ENGINE_ID = (
+    os.getenv('GOOGLE_PSE_ENGINE_ID')
+    or os.getenv('GOOGLE_SEARCH_ENGINE_ID', '')
+)
 
 BRAVE_SEARCH_API_KEY = os.getenv('BRAVE_SEARCH_API_KEY', '')
 

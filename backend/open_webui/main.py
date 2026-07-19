@@ -298,7 +298,7 @@ https://github.com/open-webui/open-webui
         print(banner)
     except UnicodeEncodeError:
         # Stdout can't encode the box-drawing banner (Windows cp1252, redirected/headless stdout); fall back to ASCII.
-        print(f'Open WebUI v{VERSION} - building the best AI user interface.\nhttps://github.com/open-webui/open-webui')
+        print(f'SHAHEEN-YS-UI v{VERSION} - A modern self-hosted AI workspace.\nhttps://github.com/open-webui/open-webui')
 
 
 @asynccontextmanager
@@ -407,6 +407,14 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             log.warning(f'Failed to initialize terminal servers at startup: {e}')
 
+    # Log Aider integration status
+    try:
+        from open_webui.aider_integration import get_aider_status
+        aider_status = get_aider_status()
+        log.info(f"Aider integration: {aider_status['message']}")
+    except Exception:
+        pass
+
     # Mark application as ready to accept traffic from a startup perspective.
     app.state.startup_complete = True
     await publish_event(app, EVENTS.SYSTEM_STARTUP_COMPLETED, source='system')
@@ -427,7 +435,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title='Open WebUI',
+    title='SHAHEEN-YS-UI',
     docs_url='/docs' if ENV == 'dev' else None,
     openapi_url='/openapi.json' if ENV == 'dev' else None,
     redoc_url=None,
@@ -437,7 +445,7 @@ app = FastAPI(
 # Used by readiness checks to gate traffic until startup work is done.
 app.state.startup_complete = False
 
-# For Open WebUI OIDC/OAuth2
+# For SHAHEEN-YS-UI OIDC/OAuth2
 oauth_manager = OAuthManager(app)
 app.state.oauth_manager = oauth_manager
 
@@ -1698,7 +1706,7 @@ async def generate_messages(
     pipeline, then converts the response back to Anthropic Messages format.
 
     Supports both streaming and non-streaming requests.
-    All models configured in Open WebUI are accessible via this endpoint.
+    All models configured in SHAHEEN-YS-UI are accessible via this endpoint.
 
     Authentication: Supports both standard Authorization header and
     Anthropic's x-api-key header (via middleware translation).
@@ -2193,7 +2201,7 @@ async def get_app_changelog():
 @app.get('/api/usage')
 async def get_current_usage(user=Depends(get_verified_user)):
     """
-    Get current usage statistics for Open WebUI.
+    Get current usage statistics for SHAHEEN-YS-UI.
     This is an experimental endpoint and subject to change.
     """
     try:

@@ -134,7 +134,13 @@ ENV = os.getenv('ENV', 'dev')
 FROM_INIT_PY = os.getenv('FROM_INIT_PY', 'False').lower() == 'true'
 
 if FROM_INIT_PY:
-    PACKAGE_DATA = {'version': importlib.metadata.version('open-webui')}
+    try:
+        PACKAGE_DATA = {'version': importlib.metadata.version('shaheen-ys-ui')}
+    except Exception:
+        try:
+            PACKAGE_DATA = {'version': importlib.metadata.version('open-webui')}
+        except Exception:
+            PACKAGE_DATA = {'version': '0.0.0'}
 else:
     try:
         PACKAGE_DATA = json.loads((BASE_DIR / 'package.json').read_text())
@@ -368,7 +374,7 @@ RAG_SYSTEM_CONTEXT = os.getenv('RAG_SYSTEM_CONTEXT', 'False').lower() == 'true'
 REDIS_URL = os.getenv('REDIS_URL', '')
 REDIS_CLUSTER = os.getenv('REDIS_CLUSTER', 'False').lower() == 'true'
 
-REDIS_KEY_PREFIX = os.getenv('REDIS_KEY_PREFIX', 'open-webui')
+REDIS_KEY_PREFIX = os.getenv('REDIS_KEY_PREFIX', 'shaheen-ys-ui')
 
 REDIS_SENTINEL_HOSTS = os.getenv('REDIS_SENTINEL_HOSTS', '')
 REDIS_SENTINEL_PORT = os.getenv('REDIS_SENTINEL_PORT', '26379')
@@ -839,11 +845,11 @@ if LICENSE_PUBLIC_KEY:
 # WEBUI Identity
 ####################################
 
-WEBUI_NAME = os.getenv('WEBUI_NAME', 'Open WebUI')
-if WEBUI_NAME != 'Open WebUI':
-    WEBUI_NAME += ' (Open WebUI)'
+WEBUI_NAME = os.getenv('WEBUI_NAME', 'SHAHEEN-YS-UI')
+if WEBUI_NAME != 'SHAHEEN-YS-UI':
+    WEBUI_NAME += ' (SHAHEEN-YS-UI)'
 
-WEBUI_FAVICON_URL = 'https://openwebui.com/favicon.png'
+WEBUI_FAVICON_URL = os.getenv('WEBUI_FAVICON_URL', '/static/favicon.png')
 WEBUI_BUILD_HASH = os.getenv('WEBUI_BUILD_HASH', 'dev-build')
 TRUSTED_SIGNATURE_KEY = os.getenv('TRUSTED_SIGNATURE_KEY', '')
 
@@ -1124,7 +1130,7 @@ OTEL_METRICS_EXPORTER_OTLP_INSECURE = (
 OTEL_LOGS_EXPORTER_OTLP_INSECURE = (
     os.getenv('OTEL_LOGS_EXPORTER_OTLP_INSECURE', str(OTEL_EXPORTER_OTLP_INSECURE)).lower() == 'true'
 )
-OTEL_SERVICE_NAME = os.getenv('OTEL_SERVICE_NAME', 'open-webui')
+OTEL_SERVICE_NAME = os.getenv('OTEL_SERVICE_NAME', 'shaheen-ys-ui')
 OTEL_RESOURCE_ATTRIBUTES = os.getenv('OTEL_RESOURCE_ATTRIBUTES', '')  # e.g. key1=val1,key2=val2
 OTEL_TRACES_SAMPLER = os.getenv('OTEL_TRACES_SAMPLER', 'parentbased_always_on').lower()
 OTEL_BASIC_AUTH_USERNAME = os.getenv('OTEL_BASIC_AUTH_USERNAME', '')

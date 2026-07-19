@@ -163,7 +163,7 @@ async def get_headers_and_cookies(
         **(
             {
                 'HTTP-Referer': 'https://openwebui.com/',
-                'X-Title': 'Open WebUI',
+                'X-Title': 'SHAHEEN-YS-UI',
             }
             if 'openrouter.ai' in url
             else {}
@@ -421,7 +421,7 @@ async def speech(request: Request, user=Depends(get_verified_user)):
 
             raise HTTPException(
                 status_code=r.status if r else 500,
-                detail=detail if detail else 'Open WebUI: Server Connection Error',
+                detail=detail if detail else 'SHAHEEN-YS-UI: Server Connection Error',
             )
 
     except ValueError:
@@ -696,7 +696,7 @@ async def get_models(request: Request, url_idx: int | None = None, user=Depends(
             except aiohttp.ClientError as e:
                 # ClientError covers all aiohttp requests issues
                 log.exception(f'Client error: {str(e)}')
-                raise HTTPException(status_code=500, detail='Open WebUI: Server Connection Error')
+                raise HTTPException(status_code=500, detail='SHAHEEN-YS-UI: Server Connection Error')
             except Exception as e:
                 log.exception(f'Unexpected error: {e}')
                 error_detail = f'Unexpected error: {str(e)}'
@@ -1701,7 +1701,7 @@ async def proxy(path: str, request: Request, user=Depends(get_verified_user)):
         log.exception(e)
         raise HTTPException(
             status_code=r.status if r else 500,
-            detail='Open WebUI: Server Connection Error',
+            detail='SHAHEEN-YS-UI: Server Connection Error',
         )
     finally:
         if not streaming:

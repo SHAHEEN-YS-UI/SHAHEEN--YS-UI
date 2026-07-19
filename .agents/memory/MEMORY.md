@@ -1,0 +1,1 @@
+- [SHAHEEN-YS-UI build & run setup](shaheen-ys-ui-run-setup.md) — Node 20 required, blocked packages, Python deps, workflow command, DB setup

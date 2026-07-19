@@ -1,6 +1,6 @@
 [project]
-name = "open-webui"
-description = "Open WebUI"
+name = "shaheen-ys-ui"
+description = "SHAHEEN-YS-UI"
 authors = [
     { name = "Timothy Jaeryang Baek", email = "tim@openwebui.com" }
 ]
@@ -171,6 +171,7 @@ all = [
 ]
 
 [project.scripts]
+shaheen-ys-ui = "open_webui:app"
 open-webui = "open_webui:app"
 
 [build-system]

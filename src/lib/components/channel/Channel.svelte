@@ -309,10 +309,10 @@
 					} else {
 						return e.name;
 					}
-				}, '')} • Open WebUI</title
+				}, '')} • SHAHEEN-YS-UI</title
 		>
 	{:else}
-		<title>#{channel?.name ?? 'Channel'} • Open WebUI</title>
+		<title>#{channel?.name ?? 'Channel'} • SHAHEEN-YS-UI</title>
 	{/if}
 </svelte:head>
 
